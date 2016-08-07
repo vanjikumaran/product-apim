@@ -41,6 +41,14 @@ public class ResourceModifier200 {
     public static void updateSynapseConfigs(List<SynapseDTO> synapseDTOs) {
 
         for (SynapseDTO synapseDTO : synapseDTOs) {
+            log.info("++++++++++++++++ Synapse name :" +synapseDTO.getFile().getName());
+
+        }
+
+        for (SynapseDTO synapseDTO : synapseDTOs) {
+
+            log.info("################# Synapse name :" +synapseDTO.getFile().getName());
+
             Element handlersElement = (Element) synapseDTO.getDocument()
                     .getElementsByTagNameNS(Constants.SYNAPSE_API_XMLNS, Constants.SYNAPSE_API_ELEMENT_HANDLERS)
                     .item(0);

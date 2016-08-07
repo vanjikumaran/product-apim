@@ -84,7 +84,8 @@ public class MigrateFrom110to200 extends MigrationClientBase implements Migratio
         String amScriptPath = CarbonUtils.getCarbonHome() + File.separator + "migration-scripts" + File.separator +
                 "110-200-migration" + File.separator;
 
-        updateAPIManagerDatabase(amScriptPath);
+        //REMOVED THE DB MIGRATION AS IT IS HANDLED BY DB
+        //updateAPIManagerDatabase(amScriptPath);
 
         //updateAuthzUserName();
         
@@ -838,10 +839,9 @@ public class MigrateFrom110to200 extends MigrationClientBase implements Migratio
         log.info("Swagger migration for API Manager " + Constants.VERSION_1_10 + " started.");
 
         for (Tenant tenant : getTenantsArray()) {
-            if (log.isDebugEnabled()) {
-                log.debug(
-                        "Start swaggerResourceMigration for tenant " + tenant.getId() + '(' + tenant.getDomain() + ')');
-            }
+
+                log.info("Start swaggerResourceMigration for tenant " + tenant.getId() + '(' + tenant.getDomain() + ')');
+
 
             try {
                 registryService.startTenantFlow(tenant);
@@ -859,10 +859,26 @@ public class MigrateFrom110to200 extends MigrationClientBase implements Migratio
     }
 
     private void updateSwaggerResources(GenericArtifact[] artifacts, Tenant tenant) throws APIMigrationException {
-        log.debug("Calling updateSwaggerResources");
+
+        log.info("Calling updateSwaggerResources");
         for (GenericArtifact artifact : artifacts) {
+            try {
+                log.info("##### Registry artifact Names Path " + artifact.getPath() + " ####");
+            } catch (GovernanceException ex) {
+                log.error(" While List error happend");
+            }
+        }
+
+
+        for (GenericArtifact artifact : artifacts) {
+
             API api = registryService.getAPI(artifact);
 
+            try {
+                log.info("++++++++ Started to artifact  " + artifact.getPath() + " ####");
+            } catch (GovernanceException ex) {
+                log.error(" While List error happend");
+            }
             if (api != null) {
                 APIIdentifier apiIdentifier = api.getId();
                 String apiName = apiIdentifier.getApiName();
@@ -871,7 +887,7 @@ public class MigrateFrom110to200 extends MigrationClientBase implements Migratio
                 try {
                     String swagger2location = ResourceUtil
                             .getSwagger2ResourceLocation(apiName, apiVersion, apiProviderName);
-                    log.debug("Creating swagger v2.0 resource using v1.2 for : " + apiName + '-' + apiVersion + '-'
+                    log.info("Creating swagger v2.0 resource using v1.2 for : " + apiName + '-' + apiVersion + '-'
                             + apiProviderName);
                     String swagger2Document = getSwagger2docUsingSwagger12RegistryResources(tenant, swagger2location, api);
 
